@@ -1,0 +1,23 @@
+Projeto TP8 - Reparações Auto (ex1)
+
+Persistência e setup de base de dados
+- Base de dados: autoRepair ; coleção: repairs.
+- Importação automática via Docker: a imagem mongodb (Dockerfile.mongo) copia repairs.json para /tmp/ e executa mongo-init/import.sh, que corre mongoimport --db autoRepair --collection repairs --jsonArray.
+- Dataset limpo: reparacoes_limpas.json pode ser gerado com arranja_dataset.py (remove duplicados, limpa intervenções) e substituir repairs.json se necessário.
+- Containers: mongodb_repairs (MongoDB), api_repairs (Node/Express + Mongoose), interface_web (Node/Express + Pug).
+
+Como importar/atualizar dados manualmente
+- Substituir api/repairs.json pelo ficheiro desejado.
+- (Opcional) Gerar dataset limpo: cd ex1 && python3 arranja_dataset.py ; copiar reparacoes_limpas.json para api/repairs.json.
+- Reconstruir a imagem do Mongo para reexecutar o import: docker compose build mongodb && docker compose up -d mongodb (ou docker compose down && docker compose up -d).
+
+Como executar as aplicações
+- Pré-requisitos: Docker e Docker Compose.
+- Comandos: cd ex1 && docker compose up --build -d
+- Endpoints: API em http://localhost:16025/repairs ; Interface em http://localhost:16026
+- Mongo em container: mongodb:27017 (rede repairs-network).
+
+Notas de implementação
+- API usa Mongoose com esquema flexível (strict:false) para a coleção repairs.
+- Interface em Pug/Express consome API_URL (definido em docker-compose) e usa W3CSS para UI.
+- mongo-init/import.sh é executado apenas no bootstrap da base de dados; reimportar requer rebuild do serviço mongodb ou remoção do volume associado.

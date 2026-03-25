@@ -7,11 +7,13 @@ services:
     networks:
       - repairs-network
 
-  ex1:
+  api:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: ex1_api
+    container_name: api_repairs
+    ports:
+      - "16025:16025"
     environment:
       - MONGO_URL=mongodb://mongodb:27017/autoRepair
     depends_on:
@@ -19,17 +21,17 @@ services:
     networks:
       - repairs-network
 
-  ex2:
+  interface:
     build:
       context: ./interface
       dockerfile: Dockerfile.interface
-    container_name: ex2_interface
+    container_name: interface_web
     ports:
       - "16026:16026"
     environment:
-      - API_URL=http://ex1:16025/repairs
+      - API_URL=http://api_repairs:16025/repairs
     depends_on:
-      - ex1
+      - api
     networks:
       - repairs-network
 
